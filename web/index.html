@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="es" class="i18n-pending">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>YouMixer</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect x='2' y='2' width='60' height='60' rx='12' fill='%23c39a55'/><path d='M24 16v32l26-16z' fill='%23161616'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Share+Tech+Mono&display=swap">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<!-- Texts come from web/i18n/<language>.json: data-i18n (text), data-i18n-html (text with markup) and data-i18n-attr (attributes) -->
+<header class="topbar">
+  <h1 class="logo" aria-label="YouMixer"><span class="logo-you" aria-hidden="true">You</span><span class="logo-plate" aria-hidden="true">Mixer</span></h1>
+  <nav data-i18n-attr="aria-label:nav.tools">
+    <button id="profile-key" class="profile-key" data-open="profiles" data-i18n-attr="title:profile.key_title">
+      <span class="label" data-i18n="profile.key_label"></span><span id="profile-name"></span>
+    </button>
+    <button id="window-toggle" class="square tool"></button>
+    <button class="square tool" data-open="activity" data-i18n-attr="aria-label:tool.activity;title:tool.activity">
+      <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg>
+    </button>
+    <button id="settings-key" class="square tool" data-open="settings" data-i18n-attr="aria-label:tool.settings;title:tool.settings">
+      <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="18" r="2"/></svg>
+    </button>
+    <div class="power-wrap">
+      <span class="klabel"><span id="power-led" class="led on" aria-hidden="true"></span><span id="power-state">ON</span></span>
+      <button id="power" class="red square" data-i18n-attr="title:power.title">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M12 3v8"/><path d="M6.3 6.8a8 8 0 1 0 11.4 0"/></svg>
+      </button>
+    </div>
+  </nav>
+</header>
+
+<div id="offline" class="offline" hidden>
+  <p><strong data-i18n="offline.title"></strong></p>
+  <p id="offline-text" class="hint" data-i18n="offline.text"></p>
+</div>
+
+<div class="layout" id="layout">
+  <aside class="side" data-i18n-attr="aria-label:side.aria">
+    <div class="selector" role="tablist" data-i18n-attr="aria-label:side.view">
+      <button role="tab" id="tab-queue" data-pane="queue" aria-controls="pane-queue" aria-selected="true"><span class="led" aria-hidden="true"></span><span data-i18n="tab.queue"></span> <span id="queue-badge"></span></button>
+      <button role="tab" id="tab-lists" data-pane="lists" aria-controls="pane-lists" aria-selected="false"><span class="led" aria-hidden="true"></span><span data-i18n="tab.lists"></span></button>
+    </div>
+
+    <section id="pane-queue" class="pane jcard" role="tabpanel" aria-labelledby="tab-queue">
+      <div class="jcard-head">
+        <div class="meta">
+          <span id="queue-count" class="label"></span>
+          <strong id="queue-name"></strong>
+          <p id="queue-empty" class="queue-hint" data-i18n-html="queue.empty_hint"></p>
+        </div>
+        <button id="save-queue" class="ink" data-i18n="queue.save" data-i18n-attr="title:queue.save_title"></button>
+      </div>
+      <ol id="queue" class="tracks"></ol>
+    </section>
+
+    <section id="pane-lists" class="pane lists" role="tabpanel" aria-labelledby="tab-lists" hidden>
+      <form id="import-form" class="row">
+        <label class="field">
+          <span class="label" data-i18n="lists.link_label"></span>
+          <input id="import-url" class="lcd" autocomplete="off" data-i18n-attr="placeholder:lists.link_placeholder">
+        </label>
+        <button data-i18n="lists.add"></button>
+      </form>
+      <div id="selection-bar" class="field selection" role="group" aria-labelledby="selection-count" hidden>
+        <span id="selection-count" class="label"></span>
+        <div class="selection-row">
+          <button id="shuffle-selected" class="red">
+            <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7h3c4 0 6 10 10 10h4"/><path d="M17 14l3 3-3 3"/><path d="M3 17h3c1.5 0 2.7-1.4 3.8-3.2"/><path d="M13.2 9.2C14.3 7.8 15 7 16 7h4"/><path d="M17 4l3 3-3 3"/></svg><span data-i18n="lists.shuffle"></span>
+          </button>
+          <button id="discover-selected" data-i18n="lists.similar"></button>
+          <button id="clear-selection" class="square" data-i18n-attr="aria-label:lists.clear;title:lists.clear_title">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+          </button>
+        </div>
+      </div>
+      <button id="open-create" class="sepia" data-open="create">
+        <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5L18 18M6 18l2.5-2.5M15.5 8.5L18 6"/></svg><span data-i18n="lists.create"></span>
+      </button>
+      <ul id="sources" class="tapes"></ul>
+      <p id="sources-empty" class="empty" data-i18n="lists.empty"></p>
+    </section>
+  </aside>
+
+  <div id="splitter" class="splitter" role="separator" aria-orientation="vertical" aria-controls="layout" tabindex="0"
+       data-i18n-attr="aria-label:splitter.aria;title:splitter.title"><span class="grip" aria-hidden="true"></span></div>
+
+  <main class="stage" data-i18n-attr="aria-label:player.aria">
+    <div class="deck">
+      <div class="bezel">
+        <span class="screw" aria-hidden="true"></span><span class="screw" aria-hidden="true"></span>
+        <span class="screw" aria-hidden="true"></span><span class="screw" aria-hidden="true"></span>
+        <div class="video"><div id="yt"></div><div id="video-empty" class="empty" data-i18n="player.empty"></div></div>
+      </div>
+      <div id="notice" class="notice" role="alert" hidden></div>
+
+      <div class="readout">
+        <div class="display">
+          <div class="display-row dim"><span id="now-pos"></span><span id="now-modes"></span></div>
+          <strong id="now-title"></strong>
+          <div class="display-row"><span id="now-artist"></span><span id="now-time"></span></div>
+          <div class="bar" aria-hidden="true"><div id="now-bar"></div></div>
+        </div>
+        <div class="cassette" aria-hidden="true">
+          <svg viewBox="0 0 200 92" width="200" height="92">
+            <rect x="2" y="2" width="196" height="88" rx="8" fill="#1a1a1a" stroke="#000" stroke-width="2"/>
+            <rect x="34" y="18" width="132" height="54" rx="27" fill="#262626" stroke="#555" stroke-width="2"/>
+            <circle cx="61" cy="45" r="22" fill="#3b3b3b"/>
+            <circle cx="139" cy="45" r="14" fill="#3b3b3b"/>
+            <path d="M61 23 L139 31" stroke="#3b3b3b" stroke-width="2"/>
+            <g class="reel"><circle cx="61" cy="45" r="11" fill="#d6d6d3"/><path d="M61 37v16M53 45h16M55.3 39.3l11.4 11.4M66.7 39.3L55.3 50.7" stroke="#1a1a1a" stroke-width="2.4" stroke-linecap="round"/></g>
+            <g class="reel"><circle cx="139" cy="45" r="11" fill="#d6d6d3"/><path d="M139 37v16M131 45h16M133.3 39.3l11.4 11.4M144.7 39.3l-11.4 11.4" stroke="#1a1a1a" stroke-width="2.4" stroke-linecap="round"/></g>
+            <text x="100" y="84" text-anchor="middle" font-family="Archivo, sans-serif" font-size="8" font-weight="700" letter-spacing="1.6" fill="#8e8e8e">TRUE SHUFFLE · 320 kbps</text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="transport" role="group" data-i18n-attr="aria-label:controls.aria">
+        <div class="kcol">
+          <button id="shuffle" aria-pressed="true" data-i18n-attr="aria-label:controls.shuffle">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7h3c4 0 6 10 10 10h4"/><path d="M17 14l3 3-3 3"/><path d="M3 17h3c1.5 0 2.7-1.4 3.8-3.2"/><path d="M13.2 9.2C14.3 7.8 15 7 16 7h4"/><path d="M17 4l3 3-3 3"/></svg>
+          </button>
+          <span class="klabel"><span class="led" aria-hidden="true"></span><span data-i18n="controls.shuffle_label"></span></span>
+        </div>
+        <div class="kcol">
+          <button id="prev" data-i18n-attr="aria-label:controls.prev;title:controls.prev_title">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true"><path d="M5 5h2.4v14H5z"/><path d="M20 5v14L8.6 12z"/></svg>
+          </button>
+          <span class="klabel" data-i18n="controls.prev_label"></span>
+        </div>
+        <div class="kcol">
+          <button id="toggle" class="red wide" data-i18n-attr="title:controls.toggle_title"></button>
+          <span class="klabel" data-i18n="controls.toggle_label"></span>
+        </div>
+        <div class="kcol">
+          <button id="next" data-i18n-attr="aria-label:controls.next;title:controls.next_title">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true"><path d="M16.6 5H19v14h-2.4z"/><path d="M4 5v14l11.4-7z"/></svg>
+          </button>
+          <span class="klabel" data-i18n="controls.next_label"></span>
+        </div>
+        <div class="kcol">
+          <button id="repeat" aria-pressed="false"></button>
+          <span class="klabel"><span class="led" aria-hidden="true"></span><span data-i18n="controls.repeat_label"></span></span>
+        </div>
+        <div class="spacer" aria-hidden="true"></div>
+        <div class="kcol">
+          <button id="like" class="small" aria-pressed="false" data-i18n-attr="aria-label:controls.like;title:controls.like_title">
+            <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7.5-4.6-7.5-10A4.3 4.3 0 0 1 12 7.6 4.3 4.3 0 0 1 19.5 10c0 5.4-7.5 10-7.5 10z"/></svg>
+          </button>
+          <span class="klabel"><span class="led" aria-hidden="true"></span><span data-i18n="controls.like_label"></span></span>
+        </div>
+        <div class="kcol">
+          <button id="dislike" class="small" aria-pressed="false" data-i18n-attr="aria-label:controls.dislike;title:controls.dislike_title">
+            <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M6.5 6.5l11 11"/></svg>
+          </button>
+          <span class="klabel" data-i18n="controls.dislike_label"></span>
+        </div>
+      </div>
+
+      <div class="grille" aria-hidden="true"><span>Stereo</span></div>
+    </div>
+  </main>
+</div>
+
+<dialog id="drawer" class="drawer" aria-labelledby="drawer-title">
+  <header class="drawer-head">
+    <h2 id="drawer-title"></h2>
+    <button id="drawer-close" class="square" data-i18n-attr="aria-label:common.close">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+  </header>
+
+  <section id="section-profiles" data-i18n-attr="data-title:drawer.profiles" hidden>
+    <div class="card">
+      <h3 data-i18n="profiles.title"></h3>
+      <p class="hint" data-i18n="profiles.hint"></p>
+      <ul id="profiles-list" class="profiles"></ul>
+    </div>
+    <form id="profile-form" class="card">
+      <h3 data-i18n="profiles.new"></h3>
+      <label class="field"><span class="label" data-i18n="profiles.name"></span>
+        <input id="profile-new-name" class="lcd" maxlength="40" autocomplete="off" data-i18n-attr="placeholder:profiles.name_placeholder">
+      </label>
+      <label class="check"><input type="checkbox" id="profile-copy"> <span id="profile-copy-label"></span></label>
+      <button class="red" data-i18n="profiles.create"></button>
+    </form>
+  </section>
+
+  <section id="section-create" data-i18n-attr="data-title:drawer.create" hidden>
+    <div class="card">
+      <h3 data-i18n="create.discovery"></h3>
+      <p class="hint" data-i18n="create.discovery_hint"></p>
+      <button id="discover-profile" class="red" data-i18n="create.discover"></button>
+    </div>
+    <form id="create-form" class="card">
+      <h3 data-i18n="create.custom"></h3>
+      <fieldset>
+        <legend class="label" data-i18n="create.genres"></legend>
+        <div id="genres" class="chips"></div>
+      </fieldset>
+      <label class="field"><span class="label" data-i18n="create.terms"></span>
+        <input id="terms" class="lcd" autocomplete="off" data-i18n-attr="placeholder:create.terms_placeholder">
+      </label>
+      <p id="create-sources" class="hint"></p>
+      <label class="field"><span id="explore-label" class="label"></span>
+        <input id="explore" type="range" min="0" max="100" step="10" value="50">
+      </label>
+      <label class="field"><span class="label" data-i18n="create.size"></span>
+        <input id="size" class="lcd" type="number" min="10" max="200" value="50">
+      </label>
+      <button class="red" data-i18n="create.submit"></button>
+    </form>
+  </section>
+
+  <section id="section-activity" data-i18n-attr="data-title:drawer.activity" hidden>
+    <div id="profile" class="card"></div>
+    <div class="card">
+      <h3 data-i18n="activity.history"></h3>
+      <ul id="history" class="tracks"></ul>
+    </div>
+  </section>
+
+  <section id="section-settings" data-i18n-attr="data-title:drawer.settings" hidden>
+    <div class="card">
+      <h3 data-i18n="settings.language_title"></h3>
+      <label class="field"><span class="label" data-i18n="settings.language_label"></span>
+        <select id="language" class="lcd"></select>
+      </label>
+    </div>
+    <div class="card">
+      <h3 data-i18n="settings.window_title"></h3>
+      <label class="field"><span class="label" data-i18n="settings.open_mode_label"></span>
+        <select id="open-mode" class="lcd">
+          <option value="browser" data-i18n="settings.mode_browser"></option>
+          <option value="window" data-i18n="settings.mode_window"></option>
+        </select>
+      </label>
+      <p id="open-mode-hint" class="hint" data-i18n="settings.window_hint"></p>
+    </div>
+    <div class="card">
+      <h3 data-i18n="settings.tray_title"></h3>
+      <label class="check"><input type="checkbox" id="tray"> <span data-i18n="settings.tray_check"></span></label>
+      <p id="tray-hint" class="hint" data-i18n="settings.tray_hint"></p>
+    </div>
+    <div class="card">
+      <h3 data-i18n="settings.bm_title"></h3>
+      <p class="hint" data-i18n="settings.bm_hint"></p>
+      <ol class="steps">
+        <li><span data-i18n="settings.bm_step1"></span> <a id="bookmarklet" class="button" href="#">+ YouMixer</a></li>
+        <li data-i18n="settings.bm_step2"></li>
+        <li data-i18n="settings.bm_step3"></li>
+      </ol>
+      <p class="hint" data-i18n="settings.bm_note"></p>
+    </div>
+    <div class="card">
+      <h3 data-i18n="settings.version_title"></h3>
+      <p id="version-current"></p>
+      <p id="update-status" class="hint"></p>
+      <div class="row">
+        <a id="update-download" class="button red-link" target="_blank" rel="noopener" data-i18n="update.download" hidden></a>
+        <button id="check-now" data-i18n="settings.check_now"></button>
+      </div>
+      <label class="check"><input type="checkbox" id="check-updates"> <span data-i18n="settings.check_updates"></span></label>
+    </div>
+    <div class="card">
+      <h3 data-i18n="settings.data_title"></h3>
+      <p class="hint" data-i18n-html="settings.data_hint"></p>
+      <a class="button" href="/api/export" data-i18n="settings.export"></a>
+    </div>
+    <form id="settings-form" class="card">
+      <h3 data-i18n="settings.keys_title"></h3>
+      <p class="hint" data-i18n="settings.keys_hint"></p>
+      <label class="field"><span class="label"><span data-i18n="settings.lastfm_label"></span> <span id="lastfm-status"></span></span>
+        <input id="lastfm-key" class="lcd" autocomplete="off" data-i18n-attr="placeholder:settings.lastfm_placeholder">
+      </label>
+      <label class="field"><span class="label"><span data-i18n="settings.youtube_label"></span> <span id="youtube-status"></span></span>
+        <input id="youtube-key" class="lcd" autocomplete="off" data-i18n-attr="placeholder:settings.youtube_placeholder">
+      </label>
+      <button data-i18n="settings.save_keys"></button>
+    </form>
+    <div class="card">
+      <h3 data-i18n="settings.account_title"></h3>
+      <p id="account-status" class="hint"></p>
+      <div id="account-on" class="row" hidden>
+        <button id="import-account" class="red" data-i18n="settings.import_account"></button>
+        <button id="logout" data-i18n="settings.logout"></button>
+      </div>
+      <form id="login-form">
+        <p class="hint" data-i18n-html="settings.login_hint"></p>
+        <label class="field"><span class="label" data-i18n="settings.headers_label"></span>
+          <textarea id="login-headers" class="lcd" rows="4"></textarea>
+        </label>
+        <button data-i18n="settings.connect"></button>
+      </form>
+    </div>
+  </section>
+</dialog>
+
+<dialog id="ask"><form method="dialog">
+  <label class="field"><span id="ask-text" class="label"></span><input id="ask-input" class="lcd" autocomplete="off"></label>
+  <div class="row"><button value="ok" class="red" data-i18n="common.ok"></button><button value="cancel" data-i18n="common.cancel"></button></div>
+</form></dialog>
+<div id="toast" role="status" hidden></div>
+<script src="/app.js"></script>
+<script src="https://www.youtube.com/iframe_api"></script>
+</body>
+</html>

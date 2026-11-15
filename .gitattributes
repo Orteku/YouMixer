@@ -1,0 +1,5 @@
+# Batch files must keep Windows line endings or cmd.exe misreads them; everything else uses LF
+* text=auto eol=lf
+*.bat text eol=crlf
+*.png binary
+*.ico binary

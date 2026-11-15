@@ -1,0 +1,4 @@
+ytmusicapi==1.12.3
+requests==2.34.2
+pystray==0.19.5
+pillow==12.3.0

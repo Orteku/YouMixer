@@ -1,0 +1,12 @@
+# Personal data: lists, history, keys and the YouTube account session (browser.json). Never publish it.
+data/
+
+# Python environment created by Install.bat
+.venv/
+
+__pycache__/
+*.pyc
+
+*.exe
+/dist/
+/build/
