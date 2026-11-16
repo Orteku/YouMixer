@@ -194,7 +194,7 @@
   "settings.tray_title": "Icono junto al reloj",
   "settings.tray_check": "Mostrar el icono de YouMixer junto al reloj mientras esté encendido",
   "settings.tray_hint": "Clic: abre la página. Clic derecho: abrir o apagar. Si no lo ves, puede estar en la flecha ^ junto al reloj; arrástralo fuera para tenerlo siempre a la vista.",
-  "settings.tray_missing": "Para usar el icono, ejecuta Install.bat una vez y vuelve a encender YouMixer.",
+  "settings.tray_missing": "El icono necesita los paquetes pystray y pillow. Instala los requisitos y vuelve a encender YouMixer.",
   "settings.tray_on": "Icono junto al reloj activado",
   "settings.tray_off": "Icono quitado",
   "settings.bm_title": "Guardar mixes desde YouTube",

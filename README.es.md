@@ -19,14 +19,19 @@ La primera vez, Windows puede decir "Windows protegió tu PC" porque el programa
 
 Necesitas Python 3.10 o más reciente.
 
-- **`Install.bat`**: prepara Python, registra el enlace `youmixer://` (para el botón *Encender* de la página) y crea el acceso «YouMixer» en el menú Inicio. Es solo para tu usuario y no pide permisos de administrador. Si no lo ejecutas, `YouMixer.bat` lo hace la primera vez.
-- **`Uninstall.bat`**: apaga YouMixer, borra el enlace `youmixer://`, el acceso del menú Inicio y el entorno de Python (`.venv`). Pregunta si borrar también tus datos (`data`); por defecto se conservan. La carpeta y el código no se tocan.
+```
+python -m venv .venv
+.venv\Scripts\python.exe -m pip install -r requirements.txt
+.venv\Scripts\python.exe server.py
+```
+
+Los datos van a una carpeta `data` dentro del proyecto. El enlace `youmixer://` y el acceso del menú Inicio solo los crea el instalador.
 
 ## Abrirlo
 
-Doble clic en `YouMixer.bat`. La primera vez prepara lo necesario (hace falta Python). Se abre en `http://localhost:8787` y funciona en segundo plano, sin ventana. La tecla roja de encendido, arriba a la derecha, lo apaga; con YouMixer apagado, la misma tecla lo enciende y el piloto de encima indica ON u OFF. Si lo abres estando ya encendido, solo abre la página.
+Ejecuta `YouMixer.exe` (o `server.py`, desde el código fuente). Se abre en `http://localhost:8787` y funciona en segundo plano, sin ventana. La tecla roja de encendido, arriba a la derecha, lo apaga; con YouMixer apagado, la misma tecla lo enciende y el piloto de encima indica ON u OFF. Si lo abres estando ya encendido, solo abre la página.
 
-Para encender desde la página no hace falta el `.bat`: guarda `http://localhost:8787` en marcadores. El navegador guarda una copia de la página la primera vez que la abres con YouMixer encendido, así que después se abre aunque esté apagado. Al pulsar *Encender*, el navegador abre un enlace `youmixer://` que arranca YouMixer; la primera vez pregunta si puede abrirlo. Ese enlace lo registra `Install.bat` y lo quita `Uninstall.bat`.
+Para encender desde la página: guarda `http://localhost:8787` en marcadores. El navegador guarda una copia de la página la primera vez que la abres con YouMixer encendido, así que después se abre aunque esté apagado. Al pulsar *Encender*, el navegador abre un enlace `youmixer://` que arranca YouMixer; la primera vez pregunta si puede abrirlo. Ese enlace lo registra el instalador y se quita al desinstalar; con la versión portable, abre `YouMixer.exe`.
 
 Mientras está encendido aparece un icono junto al reloj de Windows: con un clic abre la página, y con clic derecho puedes abrirla o apagar YouMixer. Se quita y se pone con la casilla de *Ajustes → Icono junto al reloj*. Si no lo ves, puede estar escondido en la flecha ^ junto al reloj.
 
@@ -98,7 +103,7 @@ Al encenderse, YouMixer consulta la última versión publicada en [github.com/Or
 
 ```
 .venv\Scripts\python.exe -m pip install -r requirements-dev.txt
-.venv\Scripts\python.exe packaginguild.py
+.venv\Scripts\python.exe packaging\build.py
 ```
 
 Esto crea en `dist/` el instalador y el zip portable. Necesita [Inno Setup 6](https://jrsoftware.org/isinfo.php) (`winget install JRSoftware.InnoSetup`); con `--no-installer` se salta esa parte.
@@ -107,7 +112,6 @@ Para publicar una versión: cambia `VERSION` en `youmixer/version.py`, genera la
 
 ```
 server.py            punto de entrada: el servidor web local y su API
-install.py           integración con Windows (enlace youmixer://, acceso del menú Inicio)
 youmixer/
   service.py         lo que hace la app: importar, mezclar, generar mixes, aprender
   engine.py          lógica de mezcla y recomendación, sin red ni disco

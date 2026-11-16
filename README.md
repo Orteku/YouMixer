@@ -19,14 +19,19 @@ The first time, Windows may say "Windows protected your PC" because the program 
 
 You need Python 3.10 or newer.
 
-- **`Install.bat`**: sets up Python, registers the `youmixer://` link (used by the page's power key) and creates a "YouMixer" shortcut in the Start menu. It's for your Windows user only and doesn't ask for administrator rights. If you don't run it, `YouMixer.bat` does it the first time.
-- **`Uninstall.bat`**: turns YouMixer off and removes the `youmixer://` link, the Start menu shortcut and the Python environment (`.venv`). It asks whether to delete your data (`data`) too; by default it's kept. The folder and the code are left untouched.
+```
+python -m venv .venv
+.venv\Scripts\python.exe -m pip install -r requirements.txt
+.venv\Scripts\python.exe server.py
+```
+
+The data goes in a `data` folder inside the project. The `youmixer://` link and the Start menu shortcut are only created by the installer.
 
 ## Opening it
 
-Double-click `YouMixer.bat`. The first time it sets up what it needs. It opens at `http://localhost:8787` and runs in the background, with no window. The red power key at the top right turns it off; with YouMixer off, the same key turns it on, and the light above it shows ON or OFF. If you open it while it's already on, it just opens the page.
+Run `YouMixer.exe` (or `server.py`, from the source code). It opens at `http://localhost:8787` and runs in the background, with no window. The red power key at the top right turns it off; with YouMixer off, the same key turns it on, and the light above it shows ON or OFF. If you open it while it's already on, it just opens the page.
 
-You don't need the `.bat` to turn it on from the page: bookmark `http://localhost:8787`. Your browser keeps a copy of the page the first time you open it with YouMixer on, so afterwards it opens even when YouMixer is off. When you press the power key, the browser opens a `youmixer://` link that starts YouMixer; the first time, it asks whether it may open it. That link is registered by `Install.bat` and removed by `Uninstall.bat`.
+To turn it on from the page: bookmark `http://localhost:8787`. Your browser keeps a copy of the page the first time you open it with YouMixer on, so afterwards it opens even when YouMixer is off. When you press the power key, the browser opens a `youmixer://` link that starts YouMixer; the first time, it asks whether it may open it. That link is registered by the installer and removed when you uninstall; with the portable version, open `YouMixer.exe` instead.
 
 While it's on, an icon appears next to the Windows clock: click it to open the page, or right-click it to open the page or turn YouMixer off. It can be turned on or off in *Settings → Icon next to the clock*. If you can't see it, it may be hidden behind the ^ arrow next to the clock.
 
@@ -102,7 +107,7 @@ YouMixer checks the latest release published at [github.com/Orteku/YouMixer](htt
 
 ```
 .venv\Scripts\python.exe -m pip install -r requirements-dev.txt
-.venv\Scripts\python.exe packaginguild.py
+.venv\Scripts\python.exe packaging\build.py
 ```
 
 This produces, in `dist/`, the installer and the portable zip. It needs [Inno Setup 6](https://jrsoftware.org/isinfo.php) (`winget install JRSoftware.InnoSetup`); use `--no-installer` to skip that part.
@@ -111,7 +116,6 @@ To publish a version: change `VERSION` in `youmixer/version.py`, build, and crea
 
 ```
 server.py            entry point: the local web server and its API
-install.py           Windows integration (youmixer:// link, Start menu shortcut)
 youmixer/
   service.py         what the app does: import, shuffle, generate mixes, learn
   engine.py          shuffling and recommendation logic, with no network or disk

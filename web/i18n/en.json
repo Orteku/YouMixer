@@ -194,7 +194,7 @@
   "settings.tray_title": "Icon next to the clock",
   "settings.tray_check": "Show the YouMixer icon next to the clock while it's on",
   "settings.tray_hint": "Click: opens the page. Right-click: open or turn off. If you can't see it, it may be behind the ^ arrow next to the clock; drag it out to keep it always visible.",
-  "settings.tray_missing": "To use the icon, run Install.bat once and turn YouMixer on again.",
+  "settings.tray_missing": "The icon needs the pystray and pillow packages. Install the requirements and turn YouMixer on again.",
   "settings.tray_on": "Clock icon on",
   "settings.tray_off": "Icon removed",
   "settings.bm_title": "Save mixes from YouTube",
