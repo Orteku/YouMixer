@@ -41,6 +41,7 @@ STATIC = {
     "/sw.js": ("sw.js", "text/javascript; charset=utf-8"),
 }
 LANGUAGE_FILE = re.compile(r"/i18n/([a-z]{2}(?:-[a-z]{2})?)\.json")
+WELCOME_IMAGE = re.compile(r"/welcome/([a-z]{2}(?:-[a-z]{2})?-[1-3])\.png")  # the first-run tour's pictures
 EVENT_TYPES = ("play", "finish", "skip")
 
 
@@ -90,6 +91,7 @@ def make_handler(service, port):
             "language": i18n.language(),
             "languages": i18n.available(),
             "open_mode": config.get("open_mode", "browser"),
+            "welcomed": config.get("welcomed", False),
             "window_available": launcher.window_available(),
             "version": VERSION,
             "check_updates": check_updates,
@@ -104,6 +106,8 @@ def make_handler(service, port):
                 service.tray.show() if values["tray"] else service.tray.hide()
         if "open_mode" in body:
             values["open_mode"] = body["open_mode"] if body["open_mode"] in launcher.MODES else "browser"
+        if "welcomed" in body:
+            values["welcomed"] = bool(body["welcomed"])
         if "check_updates" in body:
             values["check_updates"] = bool(body["check_updates"])
             if values["check_updates"] and service.updates:
@@ -279,6 +283,11 @@ def make_handler(service, port):
             match = LANGUAGE_FILE.fullmatch(path)
             if match and i18n.is_available(match[1]):
                 return self._file(os.path.join(WEB, "i18n", f"{match[1]}.json"), "application/json; charset=utf-8")
+            match = WELCOME_IMAGE.fullmatch(path)
+            if match:
+                image = os.path.join(WEB, "welcome", f"{match[1]}.png")
+                if os.path.exists(image):
+                    return self._file(image, "image/png")
             if path == "/api/export":
                 return self._export()
             self._api(lambda: api_get(path))

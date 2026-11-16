@@ -246,6 +246,9 @@
       <p id="tray-hint" class="hint" data-i18n="settings.tray_hint"></p>
     </div>
     <div class="card">
+      <button id="show-welcome" data-i18n="settings.tour"></button>
+    </div>
+    <div class="card">
       <h3 data-i18n="settings.bm_title"></h3>
       <p class="hint" data-i18n="settings.bm_hint"></p>
       <ol class="steps">
@@ -303,6 +306,19 @@
   <label class="field"><span id="ask-text" class="label"></span><input id="ask-input" class="lcd" autocomplete="off"></label>
   <div class="row"><button value="ok" class="red" data-i18n="common.ok"></button><button value="cancel" data-i18n="common.cancel"></button></div>
 </form></dialog>
+<dialog id="welcome" aria-labelledby="welcome-title">
+  <h2 id="welcome-title" data-i18n="welcome.title"></h2>
+  <p id="welcome-step" class="label"></p>
+  <img id="welcome-image" alt="">
+  <h3 id="welcome-heading"></h3>
+  <p id="welcome-text"></p>
+  <div class="welcome-nav">
+    <button id="welcome-skip" data-i18n="welcome.skip"></button>
+    <span class="spacer"></span>
+    <button id="welcome-back" data-i18n="welcome.back"></button>
+    <button id="welcome-next" class="red"></button>
+  </div>
+</dialog>
 <div id="toast" role="status" hidden></div>
 <script src="/app.js"></script>
 <script src="https://www.youtube.com/iframe_api"></script>

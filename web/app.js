@@ -67,6 +67,7 @@ async function switchLanguage(lang) {
   updateBookmarklet();
   updatePowerLabel();
   if (state.settings) renderSettings(state.settings);
+  if ($("welcome").open) renderTour();
   const open = [...document.querySelectorAll("#drawer section")].find((section) => !section.hidden);
   if ($("drawer").open && open) {
     $("drawer-title").textContent = open.dataset.title;
@@ -1132,6 +1133,47 @@ function announceUpdate(update) {
   toast(t("update.toast", { version: update.latest }));
 }
 
+// First-run tour: three steps with a picture each. Shown once (the server remembers it), and again from Settings.
+const TOUR_STEPS = 3;
+let tourStep = 1;
+
+function renderTour() {
+  const image = $("welcome-image");
+  const wanted = `/welcome/${i18n.lang}-${tourStep}.png`;
+  image.onerror = () => {  // no picture in this language: use the English one
+    image.onerror = null;
+    image.src = `/welcome/en-${tourStep}.png`;
+  };
+  if (!image.src.endsWith(wanted)) image.src = wanted;
+  $("welcome-step").textContent = t("welcome.step", { n: tourStep, total: TOUR_STEPS });
+  $("welcome-heading").textContent = t(`welcome.s${tourStep}_title`);
+  $("welcome-text").textContent = t(`welcome.s${tourStep}_text`);
+  $("welcome-back").hidden = tourStep === 1;
+  $("welcome-skip").hidden = tourStep === TOUR_STEPS;
+  $("welcome-next").textContent = t(tourStep === TOUR_STEPS ? "welcome.start" : "welcome.next");
+}
+
+function openTour() {
+  tourStep = 1;
+  renderTour();
+  if (!$("welcome").open) $("welcome").showModal();
+}
+
+async function closeTour() {
+  $("welcome").close();
+  if (state.settings && !state.settings.welcomed) {
+    renderSettings(await api("/api/settings", { welcomed: true }));
+  }
+}
+
+$("welcome-next").addEventListener("click", () => {
+  if (tourStep < TOUR_STEPS) { tourStep += 1; renderTour(); } else guarded(closeTour)();
+});
+$("welcome-back").addEventListener("click", () => { tourStep -= 1; renderTour(); });
+$("welcome-skip").addEventListener("click", guarded(closeTour));
+$("welcome").addEventListener("cancel", (event) => { event.preventDefault(); guarded(closeTour)(); });  // Esc counts as skipping
+$("show-welcome").addEventListener("click", () => { closeDrawer(); openTour(); });
+
 // Start-up
 guarded(async () => {
   navigator.serviceWorker?.register("/sw.js").catch(() => {});
@@ -1161,6 +1203,6 @@ guarded(async () => {
   renderToggle(false);
   applyQueue(data, false);
   showPane(state.queue.length && !state.selected.size ? "queue" : "lists");
-  announceUpdate(data.settings.update);
+  if (data.settings.welcomed) announceUpdate(data.settings.update); else openTour();
   if (data.auto_job) await watchAutoUpdate(data.auto_job);
 })().finally(() => document.documentElement.classList.remove("i18n-pending"));

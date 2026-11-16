@@ -1,5 +1,5 @@
 // Keeps a copy of the page so it opens even while YouMixer is off, and can turn it on from there.
-const CACHE = "youmixer-v3";
+const CACHE = "youmixer-v4";
 const SHELL = ["/", "/app.js", "/style.css"];
 const isLanguage = (path) => path.startsWith("/i18n/") && path.endsWith(".json");
 

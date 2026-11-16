@@ -98,6 +98,15 @@ class Languages(unittest.TestCase):
             for key, text in texts.items():
                 self.assertEqual(set(re.findall(r"{(\w+)}", text)), set(re.findall(r"{(\w+)}", reference[key])), f"{code}: {key}")
 
+    def test_welcome_tour_has_texts_and_pictures(self):
+        web = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "web")
+        texts = i18n._load("en")
+        for step in (1, 2, 3):
+            self.assertIn(f"welcome.s{step}_title", texts)
+            self.assertIn(f"welcome.s{step}_text", texts)
+            # English is what the page falls back to when a language has no pictures of its own
+            self.assertTrue(os.path.exists(os.path.join(web, "welcome", f"en-{step}.png")), step)
+
     def test_translation_and_fallback(self):
         i18n.set_language("en")
         try:

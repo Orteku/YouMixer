@@ -292,6 +292,16 @@ button.forget, button.pref { min-height: 30px; width: 32px; padding: 0; }
 #ask form { display: flex; flex-direction: column; gap: 16px; }
 #ask::backdrop { background: rgba(0, 0, 0, .5); }
 
+/* First-run tour */
+#welcome { width: min(94vw, 680px); max-height: 94vh; overflow: auto; border: 0; padding: 22px; border-radius: 6px; background: var(--body); color: var(--ink); box-shadow: 0 10px 30px rgba(0, 0, 0, .6); }
+#welcome[open] { display: flex; flex-direction: column; gap: 12px; }
+#welcome::backdrop { background: rgba(0, 0, 0, .55); }
+#welcome h2 { font: 900 20px/1.2 Archivo, sans-serif; }
+#welcome img { align-self: center; max-width: 100%; max-height: 280px; height: auto; border-radius: 6px; background: var(--recess); }
+#welcome h3 { font: 800 15px/1.2 Archivo, sans-serif; }
+.welcome-nav { display: flex; align-items: center; gap: 10px; margin-top: 6px; }
+.welcome-nav .spacer { flex: 1; }
+
 @media (max-width: 860px) {
   body { overflow: auto; }
   .topbar { height: auto; flex-wrap: wrap; padding: 12px 16px; }
